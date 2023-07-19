@@ -11,8 +11,12 @@ import {
 import "react-date-range/dist/styles.css"; // main style file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { DateRangePicker } from "react-date-range";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
-function Header() {
+function Header({ placeholder }) {
+  const router = useRouter();
+
   const [searchInput, setSearchInput] = useState("");
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
@@ -36,7 +40,10 @@ function Header() {
   return (
     <header className="sticky top-0 z-50 grid grid-cols-3 bg-white shadow-md p-3 md:px-10">
       {/* left */}
-      <div className="relative flex items-center h-7 md:h-8 cursor-pointer my-auto">
+      <div
+        className="relative flex items-center h-7 md:h-8 cursor-pointer my-auto"
+        onClick={() => router.push("/")}
+      >
         <Image
           src="https://links.papareact.com/qd3"
           layout="fill"
@@ -53,7 +60,7 @@ function Header() {
           value={searchInput}
           onChange={(event) => setSearchInput(event.target.value)}
           className="flex-grow pl-2 md:pl-5 bg-transparent outline-none text-sm text-gray-600 placeholder-gray-400"
-          placeholder="Start your search"
+          placeholder={placeholder || `Start your search`}
         />
         <MagnifyingGlassIcon className="hidden md:inline text-white cursor-pointer md:mx-2 h-8 bg-red-400 rounded-full p-2" />
       </div>
@@ -71,7 +78,7 @@ function Header() {
 
       {/* Date Picker */}
       {searchInput && (
-        <div className="flex flex-col mx-auto col-span-3">
+        <div className="flex flex-col col-span-3 mx-auto w-full md:w-1/2">
           <DateRangePicker
             ranges={[selectionRange]}
             minDate={new Date()}
@@ -79,7 +86,7 @@ function Header() {
             onChange={handleSelect}
           />
 
-          <div className="flex items-center border-b pb-2">
+          <div className="flex items-center border-b mb-4">
             <h2 className="text-2xl flex-grow font-semibold">
               Number of Guests
             </h2>
@@ -97,7 +104,20 @@ function Header() {
             <button className="flex-grow text-gray-500" onClick={resetButton}>
               Clear
             </button>
-            <button className="flex-grow text-red-400">Search</button>
+            <Link
+              href={{
+                pathname: "/search",
+                query: {
+                  location: searchInput,
+                  startDate: startDate.toISOString(),
+                  endDate: endDate.toISOString(),
+                  noOfGuests,
+                },
+              }}
+              className="flex-grow text-red-400"
+            >
+              Search
+            </Link>
           </div>
         </div>
       )}
